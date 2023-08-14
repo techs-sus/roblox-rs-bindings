@@ -1,0 +1,9 @@
+{
+	"name": "roblox-rs",
+	"tree": {
+		"$className": "DataModel",
+		"RS": {
+			"$path": "./roblox"
+		}
+	}
+}
