@@ -11,5 +11,12 @@
 
 ```bash
 # you must have rojo-script installed :woo:
-RUSTFLAGS="--remap-path-prefix $HOME=~ --remap-path-prefix $PWD=." cargo build --target wasm32-unknown-unknown --release --example test && wasm2luau ./target/wasm32-unknown-unknown/release/examples/test.wasm > ./roblox/wasm.luau && rojo build -o build.rbxm && ../dev/rojo/target/release/rojo-script --file build.rbxm --output out.lua --runtime lua-sandbox
+./build.sh
+```
+
+# Serving the massive build.lua file
+
+```bash
+# don't use localtunnel because it leaks your ip in a header
+ssh -R 80:localhost:8080 serveo.net
 ```

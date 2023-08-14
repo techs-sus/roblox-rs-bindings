@@ -1,9 +1,7 @@
 extern crate wee_alloc;
 
-use std::sync::{Arc, Mutex};
-
-use riscv_emu_rust::{default_terminal::DefaultTerminal, terminal::Terminal, Emulator};
-use roblox_rs::*;
+use riscv_emu_rust::{default_terminal::DefaultTerminal, Emulator};
+use roblox_rs::{println, *};
 // Use `wee_alloc` as the global allocator.
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
@@ -11,9 +9,9 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 /// # Safety
 #[allow(unreachable_code)]
 pub fn main() {
-    let rs = RunService::instance();
     let container = Script::new();
     container.set_parent(&Some(&Workspace::instance()));
+    println!("got workspace");
     let surface_gui = SurfaceGui::new();
     let part = Part::new();
     let textbox = TextBox::new();
@@ -41,6 +39,7 @@ pub fn main() {
 
     let terminal = DefaultTerminal::new();
     let mut emulator = Emulator::new(Box::new(terminal));
+    println!("got http");
     let root_fs = HttpService::instance().get_async(
         "https://takahirox.github.io/riscv-rust/resources/linux/rootfs.img",
         false,
@@ -52,12 +51,14 @@ pub fn main() {
     emulator.setup_program(fw_payload.as_bytes().to_vec());
     emulator.setup_filesystem(root_fs.as_bytes().to_vec());
     emulator.run();
-
-    rs.on_heartbeat(move |_| {
+    println!("got runservice");
+    RunService::instance().on_heartbeat(move |_| {
         let t = emulator.get_mut_terminal();
         let byte = t.get_output();
         let mut string = textbox.text();
-        string.push_str(std::str::from_utf8(&[byte]).unwrap());
-        textbox.set_text(&string);
+        if byte > 0 {
+            string.push_str(std::str::from_utf8(&[byte]).unwrap_or(""));
+            textbox.set_text(&string);
+        }
     });
 }
