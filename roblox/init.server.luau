@@ -72,8 +72,6 @@ util = require(script.util)(rt, wasm, memory)
 
 abi.load(wasm, rt, util)
 
-task.wait()
-
 createPointer, getPointer, dropPointer, invokeOnce, readString =
 	util.createPointer, util.getPointer, util.dropPointer, util.invokeOnce, util.readString
 

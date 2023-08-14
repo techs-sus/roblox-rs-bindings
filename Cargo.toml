@@ -2,7 +2,7 @@
 name = "roblox_rs"
 version = "0.1.0"
 authors = ["Firebolt <24422634+Fireboltofdeath@users.noreply.github.com>"]
-edition = "2018"
+edition = "2021"
 build = "./build/main.rs"
 
 [lib]
@@ -11,7 +11,7 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 # Smaller allocator
 wee_alloc = { version = "0.4.5" }
-riscv_emu_rust = { version = "0.2.0" }
+rvemu = { version = "0.0.11" }
 
 [build_dependencies]
 serde = { version = "1.0", features = ["derive"] }
@@ -33,7 +33,4 @@ opt-level = "z"
 [profile.release]
 # Tell `rustc` to optimize for small code size.
 # opt-level = "s"
-opt-level = "z"
-
-[profile.release.package."*"]
 opt-level = "z"

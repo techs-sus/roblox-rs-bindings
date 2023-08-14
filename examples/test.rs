@@ -1,7 +1,8 @@
 extern crate wee_alloc;
 
-use riscv_emu_rust::{default_terminal::DefaultTerminal, Emulator};
 use roblox_rs::{println, *};
+use rvemu::{bus::DRAM_BASE, emulator::Emulator};
+
 // Use `wee_alloc` as the global allocator.
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
@@ -11,7 +12,6 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 pub fn main() {
     let container = Script::new();
     container.set_parent(&Some(&Workspace::instance()));
-    println!("got workspace");
     let surface_gui = SurfaceGui::new();
     let part = Part::new();
     let textbox = TextBox::new();
@@ -37,9 +37,7 @@ pub fn main() {
     surface_gui.set_parent(&Some(&container));
     part.set_parent(&Some(&container));
 
-    let terminal = DefaultTerminal::new();
-    let mut emulator = Emulator::new(Box::new(terminal));
-    println!("got http");
+    let mut emulator = Emulator::new();
     let root_fs = HttpService::instance().get_async(
         "https://takahirox.github.io/riscv-rust/resources/linux/rootfs.img",
         false,
@@ -48,17 +46,16 @@ pub fn main() {
         "https://takahirox.github.io/riscv-rust/resources/linux/opensbi/fw_payload.elf",
         false,
     );
-    emulator.setup_program(fw_payload.as_bytes().to_vec());
-    emulator.setup_filesystem(root_fs.as_bytes().to_vec());
-    emulator.run();
-    println!("got runservice");
-    RunService::instance().on_heartbeat(move |_| {
-        let t = emulator.get_mut_terminal();
-        let byte = t.get_output();
-        let mut string = textbox.text();
-        if byte > 0 {
-            string.push_str(std::str::from_utf8(&[byte]).unwrap_or(""));
-            textbox.set_text(&string);
-        }
-    });
+    emulator.initialize_dram(fw_payload.as_bytes().to_vec());
+    emulator.initialize_disk(root_fs.as_bytes().to_vec());
+    emulator.initialize_pc(DRAM_BASE);
+    emulator.start();
+    // RunService::instance().on_heartbeat(move |_| {
+    //     let byte = t.get_output();
+    //     let mut string = textbox.text();
+    //     if byte > 0 {
+    //         string.push_str(std::str::from_utf8(&[byte]).unwrap_or(""));
+    //         textbox.set_text(&string);
+    //     }
+    // });
 }

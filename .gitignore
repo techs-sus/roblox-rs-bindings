@@ -1,12 +1,6 @@
 /target
 **/*.rs.bk
 Cargo.lock
-bin/
-pkg/
-wasm-pack.log
-**/*.luau
-**/*.wasm
-.vscode
-!roblox/**/*.luau
 roblox/wasm.luau
-build.rbxl
+out/build.rbxm
+out/out.lua
